@@ -1,4 +1,5 @@
 import './globals.css';
+import Navigation from '@/components/Navigation';
 
 export const metadata = {
   title: 'My Blog App',
@@ -9,16 +10,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <header className="header">
-          <div className="container">
-            <h1 className="logo">My Blog</h1>
-            <nav className="nav">
-              <a href="/">Home</a>
-              <a href="/posts">All Posts</a>
-              <a href="/posts/create">Create Post</a>
-            </nav>
-          </div>
-        </header>
+        <Navigation />
         <main className="main">
           {children}
         </main>

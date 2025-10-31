@@ -27,17 +27,6 @@ export default function Navigation() {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-      setUser(null);
-      router.push('/');
-      router.refresh();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
   return (
     <header className="header">
       <div className="container">
@@ -51,29 +40,7 @@ export default function Navigation() {
           {loading ? (
             <span style={{ color: '#ecf0f1' }}>Loading...</span>
           ) : user ? (
-            <>
-              <Link href="/posts/create" className="btn-create">Tulis Cerita</Link>
-              <span style={{ 
-                color: '#ecf0f1', 
-                marginLeft: '1.5rem',
-                fontSize: '0.9rem'
-              }}>
-                Halo, {user.name}
-              </span>
-              <Link href="/dashboard" style={{ marginLeft: '1rem' }}>Dashboard</Link>
-              <button 
-                onClick={handleLogout}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'white',
-                  cursor: 'pointer',
-                  marginLeft: '1.5rem'
-                }}
-              >
-                Keluar
-              </button>
-            </>
+            <Link href="/dashboard">Akun</Link>
           ) : (
             <>
               <Link href="/auth/login">Masuk</Link>

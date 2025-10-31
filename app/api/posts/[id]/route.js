@@ -1,6 +1,6 @@
 import { query } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUserFromRequest } from '@/lib/auth'; // ✅ Tambah import
 
 // GET single post - PUBLIC (bisa diakses semua orang)
 export async function GET(request, { params }) {
@@ -9,7 +9,7 @@ export async function GET(request, { params }) {
     
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json(
-        { error: 'Invalid post ID' },
+        { error: 'ID cerita tidak valid' },
         { status: 400 }
       );
     }
@@ -25,7 +25,7 @@ export async function GET(request, { params }) {
 
     if (posts.length === 0) {
       return NextResponse.json(
-        { error: 'Post not found' },
+        { error: 'Cerita tidak ditemukan' },
         { status: 404 }
       );
     }
@@ -34,16 +34,16 @@ export async function GET(request, { params }) {
   } catch (error) {
     console.error('Error fetching post:', error);
     return NextResponse.json(
-      { error: 'Error fetching post' },
+      { error: 'Error mengambil cerita' },
       { status: 500 }
     );
   }
 }
 
-// UPDATE post
+// UPDATE post - Hanya pemilik post atau admin yang bisa edit
 export async function PUT(request, { params }) {
   try {
-    const user = await getCurrentUserFromRequest(request); // ✅
+    const user = await getCurrentUserFromRequest(request);
     
     if (!user) {
       return NextResponse.json(
@@ -57,7 +57,7 @@ export async function PUT(request, { params }) {
     
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json(
-        { error: 'Invalid post ID' },
+        { error: 'ID cerita tidak valid' },
         { status: 400 }
       );
     }
@@ -70,7 +70,7 @@ export async function PUT(request, { params }) {
 
     if (existingPost.length === 0) {
       return NextResponse.json(
-        { error: 'Post not found' },
+        { error: 'Cerita tidak ditemukan' },
         { status: 404 }
       );
     }
@@ -80,7 +80,7 @@ export async function PUT(request, { params }) {
     // Authorization check: Hanya pemilik post atau admin yang bisa edit
     if (post.user_id !== user.userId && user.role !== 'admin') {
       return NextResponse.json(
-        { error: 'You can only edit your own posts' },
+        { error: 'Kamu hanya bisa mengedit cerita milikmu sendiri' },
         { status: 403 }
       );
     }
@@ -94,22 +94,22 @@ export async function PUT(request, { params }) {
     );
 
     return NextResponse.json({ 
-      message: 'Post updated successfully',
+      message: 'Cerita berhasil diupdate',
       id: parseInt(id)
     });
   } catch (error) {
     console.error('Error updating post:', error);
     return NextResponse.json(
-      { error: 'Error updating post: ' + error.message },
+      { error: 'Error mengupdate cerita: ' + error.message },
       { status: 500 }
     );
   }
 }
 
-// DELETE post
+// DELETE post - Hanya pemilik post atau admin yang bisa hapus
 export async function DELETE(request, { params }) {
   try {
-    const user = await getCurrentUserFromRequest(request); // ✅
+    const user = await getCurrentUserFromRequest(request);
     
     if (!user) {
       return NextResponse.json(
@@ -122,7 +122,7 @@ export async function DELETE(request, { params }) {
     
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json(
-        { error: 'Invalid post ID' },
+        { error: 'ID cerita tidak valid' },
         { status: 400 }
       );
     }
@@ -135,7 +135,7 @@ export async function DELETE(request, { params }) {
 
     if (existingPost.length === 0) {
       return NextResponse.json(
-        { error: 'Post not found' },
+        { error: 'Cerita tidak ditemukan' },
         { status: 404 }
       );
     }
@@ -145,7 +145,7 @@ export async function DELETE(request, { params }) {
     // Authorization check: Hanya pemilik post atau admin yang bisa hapus
     if (post.user_id !== user.userId && user.role !== 'admin') {
       return NextResponse.json(
-        { error: 'You can only delete your own posts' },
+        { error: 'Kamu hanya bisa menghapus cerita milikmu sendiri' },
         { status: 403 }
       );
     }
@@ -155,11 +155,11 @@ export async function DELETE(request, { params }) {
       [parseInt(id)]
     );
 
-    return NextResponse.json({ message: 'Post deleted successfully' });
+    return NextResponse.json({ message: 'Cerita berhasil dihapus' });
   } catch (error) {
     console.error('Error deleting post:', error);
     return NextResponse.json(
-      { error: 'Error deleting post' },
+      { error: 'Error menghapus cerita' },
       { status: 500 }
     );
   }

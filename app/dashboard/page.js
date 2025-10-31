@@ -1,4 +1,5 @@
 import { query } from '@/lib/db';
+import { getCurrentUser } from '@/lib/auth';
 import Link from 'next/link';
 
 async function getDashboardStats(userId) {
@@ -24,12 +25,24 @@ async function getDashboardStats(userId) {
 }
 
 export default async function DashboardPage() {
-  // Ini akan dihandle oleh middleware, user info ada di headers
-  const stats = await getDashboardStats(1); // Untuk sementara, nanti diganti dengan user ID dari session
+  const user = await getCurrentUser(); // ✅ Tambah await
+  
+  if (!user) {
+    return (
+      <div className="container">
+        <h1>Access Denied</h1>
+        <p>Please login to access the dashboard.</p>
+        <Link href="/auth/login" className="btn">Login</Link>
+      </div>
+    );
+  }
+
+  const stats = await getDashboardStats(user.userId);
 
   return (
     <div className="container">
       <h1>Dashboard</h1>
+      <p>Welcome back, {user.username}!</p>
       
       <div className="stats-grid" style={{
         display: 'grid',
@@ -71,9 +84,6 @@ export default async function DashboardPage() {
       }}>
         <Link href="/posts/create" className="btn">
           Create New Post
-        </Link>
-        <Link href="/dashboard/posts" className="btn btn-secondary">
-          Manage Posts
         </Link>
         <form action="/api/auth/logout" method="POST">
           <button type="submit" className="btn" style={{ backgroundColor: '#95a5a6' }}>

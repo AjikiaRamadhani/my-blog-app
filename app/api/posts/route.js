@@ -1,12 +1,14 @@
 import { query } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { getCurrentUserFromRequest } from '@/lib/auth'; // ✅ Gunakan yang untuk API
 
 export async function GET() {
   try {
     const posts = await query(`
-      SELECT p.*, c.name as category_name 
+      SELECT p.*, c.name as category_name, u.username, u.name as author_name
       FROM posts p 
       LEFT JOIN categories c ON p.category_id = c.id 
+      LEFT JOIN users u ON p.user_id = u.id
       WHERE p.published = true 
       ORDER BY p.created_at DESC
     `);
@@ -21,12 +23,21 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const user = await getCurrentUserFromRequest(request); // ✅
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { title, content, excerpt, slug, category_id } = await request.json();
     
     const result = await query(
-      `INSERT INTO posts (title, content, excerpt, slug, category_id) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [title, content, excerpt, slug, category_id]
+      `INSERT INTO posts (title, content, excerpt, slug, category_id, user_id) 
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [title, content, excerpt, slug, category_id, user.userId]
     );
 
     return NextResponse.json(

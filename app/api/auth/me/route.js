@@ -1,20 +1,12 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
+import { getCurrentUserFromRequest } from '@/lib/auth'; // ✅ Gunakan yang untuk API
 
-// ✅ Force menggunakan Node.js runtime
 export const runtime = 'nodejs';
 
 export async function GET(request) {
   try {
-    const token = request.cookies.get('token')?.value;
-    
-    if (!token) {
-      return NextResponse.json({ user: null }, { status: 200 });
-    }
-
-    // Verifikasi token dilakukan di sini, bukan di middleware
-    const { verifyToken } = await import('@/lib/auth');
-    const user = await verifyToken(token);
+    const user = await getCurrentUserFromRequest(request); // ✅
     
     if (!user) {
       return NextResponse.json({ user: null }, { status: 200 });

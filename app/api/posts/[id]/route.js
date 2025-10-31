@@ -1,7 +1,8 @@
 import { query } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { getCurrentUser } from '@/lib/auth';
 
-// GET single post
+// GET single post - PUBLIC (bisa diakses semua orang)
 export async function GET(request, { params }) {
   try {
     const { id } = await params;
@@ -14,10 +15,11 @@ export async function GET(request, { params }) {
     }
 
     const posts = await query(
-      `SELECT p.*, c.name as category_name 
+      `SELECT p.*, c.name as category_name, u.username, u.name as author_name
        FROM posts p 
        LEFT JOIN categories c ON p.category_id = c.id 
-       WHERE p.id = ?`,
+       LEFT JOIN users u ON p.user_id = u.id
+       WHERE p.id = ? AND p.published = true`,
       [parseInt(id)]
     );
 
@@ -41,10 +43,17 @@ export async function GET(request, { params }) {
 // UPDATE post
 export async function PUT(request, { params }) {
   try {
+    const user = await getCurrentUserFromRequest(request); // ✅
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const { title, content, excerpt, slug, category_id } = await request.json();
-    
-    console.log('Updating post:', { id, title, category_id });
     
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json(
@@ -53,9 +62,9 @@ export async function PUT(request, { params }) {
       );
     }
 
-    // Check if post exists
+    // Check if post exists dan cek ownership
     const existingPost = await query(
-      'SELECT id FROM posts WHERE id = ?',
+      'SELECT * FROM posts WHERE id = ?',
       [parseInt(id)]
     );
 
@@ -66,12 +75,22 @@ export async function PUT(request, { params }) {
       );
     }
 
+    const post = existingPost[0];
+
+    // Authorization check: Hanya pemilik post atau admin yang bisa edit
+    if (post.user_id !== user.userId && user.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'You can only edit your own posts' },
+        { status: 403 }
+      );
+    }
+
     // Update post
     await query(
       `UPDATE posts 
        SET title = ?, content = ?, excerpt = ?, slug = ?, category_id = ?, updated_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
-      [title, content, excerpt, slug, parseInt(category_id), parseInt(id)]
+      [title, content, excerpt, slug, category_id, parseInt(id)]
     );
 
     return NextResponse.json({ 
@@ -90,6 +109,15 @@ export async function PUT(request, { params }) {
 // DELETE post
 export async function DELETE(request, { params }) {
   try {
+    const user = await getCurrentUserFromRequest(request); // ✅
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     
     if (!id || isNaN(parseInt(id))) {
@@ -99,8 +127,9 @@ export async function DELETE(request, { params }) {
       );
     }
 
+    // Check if post exists dan cek ownership
     const existingPost = await query(
-      'SELECT id FROM posts WHERE id = ?',
+      'SELECT * FROM posts WHERE id = ?',
       [parseInt(id)]
     );
 
@@ -108,6 +137,16 @@ export async function DELETE(request, { params }) {
       return NextResponse.json(
         { error: 'Post not found' },
         { status: 404 }
+      );
+    }
+
+    const post = existingPost[0];
+
+    // Authorization check: Hanya pemilik post atau admin yang bisa hapus
+    if (post.user_id !== user.userId && user.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'You can only delete your own posts' },
+        { status: 403 }
       );
     }
 

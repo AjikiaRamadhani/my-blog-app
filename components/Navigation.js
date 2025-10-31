@@ -11,7 +11,7 @@ export default function Navigation() {
 
   useEffect(() => {
     checkAuth();
-  }, [pathname]); // Re-check auth ketika route berubah
+  }, [pathname]);
 
   const checkAuth = async () => {
     try {
@@ -52,8 +52,15 @@ export default function Navigation() {
             <span style={{ color: '#ecf0f1' }}>Loading...</span>
           ) : user ? (
             <>
-              <Link href="/dashboard">Dashboard</Link>
-              <span style={{ color: '#ecf0f1' }}>Hello, {user.name}</span>
+              <Link href="/posts/create" className="btn-create">Create Post</Link>
+              <span style={{ 
+                color: '#ecf0f1', 
+                marginLeft: '1.5rem',
+                fontSize: '0.9rem'
+              }}>
+                Hello, {user.name}
+              </span>
+              <Link href="/dashboard" style={{ marginLeft: '1rem' }}>Dashboard</Link>
               <button 
                 onClick={handleLogout}
                 style={{
@@ -61,7 +68,7 @@ export default function Navigation() {
                   border: 'none',
                   color: 'white',
                   cursor: 'pointer',
-                  textDecoration: 'underline'
+                  marginLeft: '1.5rem'
                 }}
               >
                 Logout

@@ -1,6 +1,6 @@
 import { query } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { getCurrentUserFromRequest } from '@/lib/auth';
+import { getCurrentUserFromRequest } from '@/lib/auth'; // ✅ Tambah import ini
 
 // GET semua komentar untuk sebuah post
 export async function GET(request) {
@@ -33,7 +33,7 @@ export async function GET(request) {
   }
 }
 
-// POST komentar baru
+// POST komentar baru (bisa jadi komentar utama atau reply)
 export async function POST(request) {
   try {
     const user = await getCurrentUserFromRequest(request);
@@ -45,7 +45,7 @@ export async function POST(request) {
       );
     }
 
-    const { post_id, content } = await request.json();
+    const { post_id, content, parent_id } = await request.json();
 
     if (!post_id || !content) {
       return NextResponse.json(
@@ -56,9 +56,9 @@ export async function POST(request) {
 
     // Insert komentar baru
     const result = await query(
-      `INSERT INTO comments (post_id, user_id, content) 
-       VALUES (?, ?, ?)`,
-      [parseInt(post_id), user.userId, content]
+      `INSERT INTO comments (post_id, user_id, content, parent_id) 
+       VALUES (?, ?, ?, ?)`,
+      [parseInt(post_id), user.userId, content, parent_id || null]
     );
 
     // Ambil data komentar yang baru dibuat

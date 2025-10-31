@@ -1,6 +1,6 @@
 import { query } from '@/lib/db';
 import { NextResponse } from 'next/server';
-import { getCurrentUserFromRequest } from '@/lib/auth';
+import { getCurrentUserFromRequest } from '@/lib/auth'; // ✅ Tambah import
 
 // DELETE komentar
 export async function DELETE(request, { params }) {

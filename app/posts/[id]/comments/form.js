@@ -1,7 +1,13 @@
 'use client';
 import { useState } from 'react';
 
-export default function CommentForm({ postId, user, onCommentAdded }) {
+export default function CommentForm({ 
+  postId, 
+  user, 
+  parentId = null,
+  onCommentAdded,
+  onCancel 
+}) {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,7 +31,8 @@ export default function CommentForm({ postId, user, onCommentAdded }) {
         },
         body: JSON.stringify({
           post_id: postId,
-          content: content.trim()
+          content: content.trim(),
+          parent_id: parentId
         }),
       });
 
@@ -62,18 +69,18 @@ export default function CommentForm({ postId, user, onCommentAdded }) {
   }
 
   return (
-    <div className="comment-form-container" style={{ marginBottom: '2rem' }}>
+    <div className="comment-form-container" style={{ marginBottom: '1rem' }}>
       <form onSubmit={handleSubmit} className="comment-form">
         <div className="form-group">
           <label htmlFor="comment-content">
-            Tambah Komentar sebagai <strong>{user.name}</strong>
+            {parentId ? 'Balas sebagai' : 'Tambah Komentar sebagai'} <strong>{user.name}</strong>
           </label>
           <textarea
             id="comment-content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Tulis komentar Anda di sini..."
-            rows="4"
+            placeholder={parentId ? "Tulis balasan Anda..." : "Tulis komentar Anda di sini..."}
+            rows="3"
             required
             disabled={loading}
             style={{
@@ -101,14 +108,27 @@ export default function CommentForm({ postId, user, onCommentAdded }) {
           </div>
         )}
 
-        <button 
-          type="submit" 
-          disabled={loading || !content.trim()}
-          className="btn"
-          style={{ fontSize: '0.9rem' }}
-        >
-          {loading ? 'Mengirim...' : 'Kirim Komentar'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <button 
+            type="submit" 
+            disabled={loading || !content.trim()}
+            className="btn"
+            style={{ fontSize: '0.9rem' }}
+          >
+            {loading ? 'Mengirim...' : (parentId ? 'Kirim Balasan' : 'Kirim Komentar')}
+          </button>
+          
+          {onCancel && (
+            <button 
+              type="button"
+              onClick={onCancel}
+              className="btn btn-secondary"
+              style={{ fontSize: '0.9rem' }}
+            >
+              Batal
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );

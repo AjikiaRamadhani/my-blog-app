@@ -36,15 +36,188 @@ body {
   font-weight: bold;
 }
 
+.logo a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .nav a {
   color: white;
   text-decoration: none;
-  margin-left: 1.5rem;
   transition: color 0.3s;
+  padding: 0.5rem 0;
 }
 
 .nav a:hover {
   color: #3498db;
+}
+
+/* User Menu Styles */
+.user-menu-container {
+  position: relative;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.user-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.user-name {
+  font-weight: 500;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dropdown-arrow {
+  font-size: 0.7rem;
+  transition: transform 0.3s;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  min-width: 200px;
+  z-index: 1000;
+  margin-top: 0.5rem;
+  border: 1px solid #e0e0e0;
+}
+
+.dropdown-user-info {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-user-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.dropdown-user-email {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+.dropdown-user-reputation {
+  font-size: 0.7rem;
+  color: #e67e22;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 0.5rem 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #2c3e50;
+  text-decoration: none;
+  transition: background 0.2s;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f8f9fa;
+  color: #2c3e50;
+}
+
+.dropdown-item.logout-btn {
+  color: #e74c3c;
+}
+
+.dropdown-item.logout-btn:hover {
+  background: #fee;
+  color: #c0392b;
+}
+
+/* Auth Links */
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-btn {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.register-btn {
+  background: #27ae60;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.register-btn:hover {
+  background: #219653;
+}
+
+.nav-loading {
+  color: #bdc3c7;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
 }
 
 /* Main Content */
@@ -416,37 +589,6 @@ body {
   gap: 0.5rem;
 }
 
-/* Responsive improvements */
-@media (max-width: 768px) {
-  .posts-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .hero h1 {
-    font-size: 2.5rem !important;
-  }
-  
-  .hero p {
-    font-size: 1.1rem !important;
-  }
-  
-  .category-card {
-    padding: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero h1 {
-    font-size: 2rem !important;
-  }
-  
-  .hero .btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
 /* ===== COMMENTS STYLES ===== */
 .comments-section {
   margin-top: 3rem;
@@ -539,8 +681,116 @@ body {
   color: #2c3e50;
 }
 
-/* Responsive comments */
+/* ===== ENHANCED COMMENTS STYLES ===== */
+.comment-item {
+  margin-bottom: 1rem;
+}
+
+.comment-reply {
+  margin-top: 0.5rem;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.like-btn, .reply-btn, .delete-comment-btn, .show-replies-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.like-btn:hover {
+  background: #fee;
+  color: #e74c3c;
+}
+
+.like-btn.liked {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.like-btn.liked:hover {
+  background: #fee;
+}
+
+.reply-btn:hover {
+  background: #e8f4fd;
+  color: #3498db;
+}
+
+.show-replies-btn {
+  color: #3498db;
+  font-size: 0.8rem;
+}
+
+.show-replies-btn:hover {
+  background: #e8f4fd;
+}
+
+.delete-comment-btn:hover {
+  background: #fee;
+}
+
+.reply-form-container {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #3498db;
+}
+
+.replies-list {
+  border-left: 2px solid #e0e0e0;
+  padding-left: 1rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
+  .posts-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  .hero p {
+    font-size: 1.1rem !important;
+  }
+  
+  .category-card {
+    padding: 1.5rem;
+  }
+  
+  .nav {
+    gap: 1rem;
+  }
+  
+  .user-name {
+    max-width: 80px;
+    font-size: 0.8rem;
+  }
+  
+  .dropdown-menu {
+    right: -0.5rem;
+    min-width: 180px;
+  }
+  
+  .auth-links {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
   .comment-header {
     flex-direction: column;
     align-items: flex-start;
@@ -548,5 +798,46 @@ body {
   
   .comment-actions {
     margin-top: 0.5rem;
+  }
+  
+  .comment-actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .replies-list {
+    margin-left: 0.5rem !important;
+    padding-left: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 2rem !important;
+  }
+  
+  .hero .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  
+  .user-menu-trigger {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .user-name {
+    display: none;
+  }
+  
+  .dropdown-menu {
+    right: -1rem;
+    min-width: 160px;
   }
 }

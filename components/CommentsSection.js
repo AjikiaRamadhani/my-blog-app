@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import CommentForm from '@/app/posts/[id]/comments/form';
+import CommentItem from './CommentItem';
 
 export default function CommentsSection({ postId, user }) {
   const [comments, setComments] = useState([]);
@@ -14,7 +15,9 @@ export default function CommentsSection({ postId, user }) {
       
       if (response.ok) {
         const data = await response.json();
-        setComments(data);
+        // Filter hanya komentar utama (tidak ada parent_id)
+        const mainComments = data.filter(comment => !comment.parent_id);
+        setComments(mainComments);
       } else {
         setError('Gagal memuat komentar');
       }
@@ -27,7 +30,13 @@ export default function CommentsSection({ postId, user }) {
   };
 
   const handleCommentAdded = (newComment) => {
-    setComments(prev => [...prev, newComment]);
+    if (newComment.parent_id) {
+      // Jika ini adalah reply, kita perlu refetch untuk mendapatkan struktur yang benar
+      fetchComments();
+    } else {
+      // Jika ini komentar utama, langsung tambahkan
+      setComments(prev => [...prev, newComment]);
+    }
   };
 
   const handleDeleteComment = async (commentId) => {
@@ -42,6 +51,8 @@ export default function CommentsSection({ postId, user }) {
 
       if (response.ok) {
         setComments(prev => prev.filter(comment => comment.id !== commentId));
+        // Juga hapus dari replies jika ada
+        fetchComments(); // Refetch untuk pastikan data konsisten
       } else {
         const error = await response.json();
         alert(error.error || 'Gagal menghapus komentar');
@@ -69,7 +80,7 @@ export default function CommentsSection({ postId, user }) {
     <section className="comments-section">
       <h3>Komentar ({comments.length})</h3>
       
-      {/* Form Komentar */}
+      {/* Form Komentar Utama */}
       <CommentForm 
         postId={postId} 
         user={user}
@@ -92,41 +103,14 @@ export default function CommentsSection({ postId, user }) {
       {comments.length > 0 ? (
         <div className="comments-list">
           {comments.map((comment) => (
-            <div key={comment.id} className="comment">
-              <div className="comment-header">
-                <div className="comment-author">
-                  <strong>
-                    {comment.author_name || 'Anonim'}
-                    {comment.user_id && <span className="user-badge">👤</span>}
-                  </strong>
-                </div>
-                <div className="comment-actions">
-                  <span className="comment-date">
-                    {new Date(comment.created_at).toLocaleDateString('id-ID', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </span>
-                  
-                  {/* Tombol hapus hanya untuk pemilik komentar atau admin */}
-                  {user && (user.userId === comment.user_id || user.role === 'admin') && (
-                    <button
-                      onClick={() => handleDeleteComment(comment.id)}
-                      className="delete-comment-btn"
-                      title="Hapus komentar"
-                    >
-                      🗑️
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="comment-content">
-                {comment.content}
-              </div>
-            </div>
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              user={user}
+              postId={postId}
+              onDeleteComment={handleDeleteComment}
+              onCommentAdded={handleCommentAdded}
+            />
           ))}
         </div>
       ) : (

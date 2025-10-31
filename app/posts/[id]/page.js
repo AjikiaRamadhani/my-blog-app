@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { query } from '@/lib/db';
+import DeleteButton from './DeleteButton';
 
 async function getPost(id) {
   try {
@@ -44,7 +45,6 @@ async function getComments(postId) {
   }
 }
 
-// ✅ PERBAIKAN: Gunakan await untuk params
 export default async function PostPage({ params }) {
   // ✅ Tunggu params selesai
   const { id } = await params;
@@ -64,6 +64,13 @@ export default async function PostPage({ params }) {
 
   return (
     <div className="container">
+      {/* Action Buttons */}
+      <div style={{ marginBottom: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <Link href="/posts" className="btn btn-secondary">← Back to Posts</Link>
+        <Link href={`/posts/${id}/edit`} className="btn">Edit Post</Link>
+        <DeleteButton postId={id} postTitle={post.title} />
+      </div>
+
       <article className="single-post">
         <header className="post-header">
           <h1 className="post-title">{post.title}</h1>
@@ -98,10 +105,6 @@ export default async function PostPage({ params }) {
           <p>No comments yet.</p>
         )}
       </section>
-
-      <div style={{ marginTop: '2rem' }}>
-        <Link href="/posts" className="btn btn-secondary">← Back to Posts</Link>
-      </div>
     </div>
   );
 }

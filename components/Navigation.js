@@ -42,23 +42,23 @@ export default function Navigation() {
     <header className="header">
       <div className="container">
         <h1 className="logo">
-          <Link href="/">My Blog</Link>
+          <Link href="/">CeritaKita</Link>
         </h1>
         <nav className="nav">
-          <Link href="/">Home</Link>
-          <Link href="/posts">All Posts</Link>
+          <Link href="/">Beranda</Link>
+          <Link href="/posts">Semua Cerita</Link>
           
           {loading ? (
             <span style={{ color: '#ecf0f1' }}>Loading...</span>
           ) : user ? (
             <>
-              <Link href="/posts/create" className="btn-create">Create Post</Link>
+              <Link href="/posts/create" className="btn-create">Tulis Cerita</Link>
               <span style={{ 
                 color: '#ecf0f1', 
                 marginLeft: '1.5rem',
                 fontSize: '0.9rem'
               }}>
-                Hello, {user.name}
+                Halo, {user.name}
               </span>
               <Link href="/dashboard" style={{ marginLeft: '1rem' }}>Dashboard</Link>
               <button 
@@ -71,13 +71,13 @@ export default function Navigation() {
                   marginLeft: '1.5rem'
                 }}
               >
-                Logout
+                Keluar
               </button>
             </>
           ) : (
             <>
-              <Link href="/auth/login">Login</Link>
-              <Link href="/auth/register">Register</Link>
+              <Link href="/auth/login">Masuk</Link>
+              <Link href="/auth/register">Daftar</Link>
             </>
           )}
         </nav>

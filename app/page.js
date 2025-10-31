@@ -60,14 +60,14 @@ export default async function Home() {
           marginBottom: '1rem',
           fontWeight: 'bold'
         }}>
-          Welcome to My Blog
+          CeritaKita
         </h1>
         <p style={{ 
           fontSize: '1.3rem', 
           marginBottom: '2rem',
           opacity: 0.9
         }}>
-          Discover amazing stories and share your thoughts
+          Tempat berbagi cerita, pengalaman, dan inspirasi dari komunitas
         </p>
         
         {!user ? (
@@ -78,7 +78,7 @@ export default async function Home() {
               fontSize: '1.1rem',
               padding: '1rem 2rem'
             }}>
-              Get Started
+              Mulai Berbagi
             </Link>
             <Link href="/posts" className="btn" style={{
               background: 'transparent',
@@ -86,7 +86,7 @@ export default async function Home() {
               fontSize: '1.1rem',
               padding: '1rem 2rem'
             }}>
-              Browse Posts
+              Jelajahi Cerita
             </Link>
           </div>
         ) : (
@@ -95,7 +95,7 @@ export default async function Home() {
             fontSize: '1.1rem',
             padding: '1rem 2rem'
           }}>
-            Create New Post
+            Tulis Cerita Baru
           </Link>
         )}
       </section>
@@ -104,7 +104,7 @@ export default async function Home() {
       {categories.length > 0 && (
         <section style={{ marginBottom: '3rem' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#2c3e50' }}>
-            Popular Categories
+            Kategori Populer
           </h2>
           <div style={{
             display: 'grid',
@@ -116,20 +116,10 @@ export default async function Home() {
                 key={category.id} 
                 href={`/posts?category=${category.id}`}
                 className="category-card"
-                style={{
-                  background: 'white',
-                  padding: '2rem',
-                  borderRadius: '8px',
-                  textAlign: 'center',
-                  textDecoration: 'none',
-                  color: '#2c3e50',
-                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                  transition: 'transform 0.3s, box-shadow 0.3s'
-                }}
               >
                 <h3 style={{ marginBottom: '0.5rem' }}>{category.name}</h3>
                 <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                  {category.post_count} posts
+                  {category.post_count} cerita
                 </p>
               </Link>
             ))}
@@ -145,9 +135,9 @@ export default async function Home() {
           alignItems: 'center',
           marginBottom: '2rem'
         }}>
-          <h2 style={{ color: '#2c3e50' }}>Recent Posts</h2>
+          <h2 style={{ color: '#2c3e50' }}>Cerita Terbaru</h2>
           <Link href="/posts" className="btn btn-secondary">
-            View All Posts
+            Lihat Semua Cerita
           </Link>
         </div>
 
@@ -160,10 +150,10 @@ export default async function Home() {
                 <div className="post-meta">
                   <span className="category">{post.category_name}</span>
                   <span className="author" style={{fontSize: '0.8em', color: '#666'}}>
-                    by {post.author_name}
+                    oleh {post.author_name}
                   </span>
                   <Link href={`/posts/${post.id}`} className="read-more">
-                    Read More →
+                    Baca Selengkapnya →
                   </Link>
                 </div>
               </article>
@@ -171,18 +161,18 @@ export default async function Home() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
-            <h3>No posts yet</h3>
-            <p>Be the first to create a post!</p>
+            <h3>Belum ada cerita</h3>
+            <p>Jadilah yang pertama berbagi cerita!</p>
             {!user && (
               <Link href="/auth/register" className="btn" style={{ marginTop: '1rem' }}>
-                Register to Get Started
+                Daftar untuk Mulai
               </Link>
             )}
           </div>
         )}
       </section>
 
-      {/* Stats Section */}
+      {/* Community Section */}
       <section style={{ 
         textAlign: 'center', 
         marginTop: '4rem',
@@ -191,14 +181,14 @@ export default async function Home() {
         borderRadius: '12px'
       }}>
         <h2 style={{ marginBottom: '1rem', color: '#2c3e50' }}>
-          Join Our Community
+          Bergabung dengan Komunitas
         </h2>
         <p style={{ color: '#666', marginBottom: '2rem', fontSize: '1.1rem' }}>
-          Share your stories, read amazing content, and connect with other writers
+          Bagikan pengalamanmu, baca cerita inspiratif, dan terhubung dengan penulis lain
         </p>
         {!user && (
           <Link href="/auth/register" className="btn" style={{ fontSize: '1.1rem', padding: '1rem 2rem' }}>
-            Start Writing Today
+            Mulai Menulis Sekarang
           </Link>
         )}
       </section>

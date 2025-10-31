@@ -53,14 +53,14 @@ export default async function PostsPage() {
         gap: '1rem'
       }}>
         <div>
-          <h1>All Blog Posts</h1>
+          <h1>Semua Cerita</h1>
           <p style={{ color: '#666', marginTop: '0.5rem' }}>
             {posts.length} posts found
           </p>
         </div>
         
         {user && (
-          <Link href="/posts/create" className="btn">Create New Post</Link>
+          <Link href="/posts/create" className="btn">Buat Cerita Baru</Link>
         )}
       </div>
 

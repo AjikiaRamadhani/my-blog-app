@@ -2,53 +2,47 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function EditPostPage({ params }) {
+export default function EditPost({ params }) {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    excerpt: '',
-    category_id: '',
-    slug: ''
+    category_id: ''
   });
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
-  // ✅ Fungsi untuk fetch data
-  const fetchData = async () => {
-    try {
-      // Tunggu params dulu
-      const { id } = await params;
-      
-      // Fetch post data
-      const postRes = await fetch(`/api/posts/${id}`);
-      if (!postRes.ok) throw new Error('Failed to fetch post');
-      const postData = await postRes.json();
-      
-      // Fetch categories
-      const catRes = await fetch('/api/categories');
-      const catData = await catRes.json();
-      
-      setFormData({
-        title: postData.title || '',
-        content: postData.content || '',
-        excerpt: postData.excerpt || '',
-        category_id: postData.category_id?.toString() || '',
-        slug: postData.slug || ''
-      });
-      setCategories(catData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('Error loading post data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    async function fetchData() {
+      try {
+        const { id } = await params;
+        
+        // Fetch post data
+        const postRes = await fetch(`/api/posts/${id}`);
+        if (!postRes.ok) throw new Error('Gagal mengambil data cerita');
+        const postData = await postRes.json();
+        
+        // Fetch categories
+        const catRes = await fetch('/api/categories');
+        const catData = await catRes.json();
+        
+        setFormData({
+          title: postData.title || '',
+          content: postData.content || '',
+          category_id: postData.category_id?.toString() || ''
+        });
+        setCategories(catData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        alert('Error loading data cerita');
+      } finally {
+        setLoading(false);
+      }
+    }
+    
     fetchData();
-  }, []);
+  }, [params]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +50,17 @@ export default function EditPostPage({ params }) {
 
     try {
       const { id } = await params;
+      
+      // Generate slug baru dari title
+      const slug = formData.title
+        .toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+
+      // Update excerpt
+      const excerpt = formData.content.substring(0, 150) + '...';
+
       const response = await fetch(`/api/posts/${id}`, {
         method: 'PUT',
         headers: {
@@ -63,20 +68,20 @@ export default function EditPostPage({ params }) {
         },
         body: JSON.stringify({
           ...formData,
-          category_id: parseInt(formData.category_id)
+          slug: slug,
+          excerpt: excerpt
         }),
       });
 
       if (response.ok) {
         router.push(`/posts/${id}`);
-        router.refresh();
       } else {
         const error = await response.json();
-        alert(error.error || 'Error updating post');
+        alert(error.error || 'Error mengupdate cerita');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error updating post');
+      alert('Error mengupdate cerita');
     } finally {
       setSaving(false);
     }
@@ -93,7 +98,7 @@ export default function EditPostPage({ params }) {
     return (
       <div className="container">
         <div className="form-container">
-          <p>Loading post data...</p>
+          <p>Memuat data cerita...</p>
         </div>
       </div>
     );
@@ -102,11 +107,11 @@ export default function EditPostPage({ params }) {
   return (
     <div className="container">
       <div className="form-container">
-        <h1>Edit Post</h1>
+        <h1>Edit Cerita</h1>
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="title">Title *</label>
+            <label htmlFor="title">Judul Cerita *</label>
             <input
               type="text"
               id="title"
@@ -115,39 +120,12 @@ export default function EditPostPage({ params }) {
               onChange={handleChange}
               required
               disabled={saving}
+              placeholder="Masukkan judul cerita Anda..."
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="slug">Slug *</label>
-            <input
-              type="text"
-              id="slug"
-              name="slug"
-              value={formData.slug}
-              onChange={handleChange}
-              required
-              disabled={saving}
-              placeholder="url-friendly-slug"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="excerpt">Excerpt *</label>
-            <textarea
-              id="excerpt"
-              name="excerpt"
-              value={formData.excerpt}
-              onChange={handleChange}
-              required
-              rows="3"
-              disabled={saving}
-              placeholder="Brief description of the post..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="content">Content *</label>
+            <label htmlFor="content">Isi Cerita *</label>
             <textarea
               id="content"
               name="content"
@@ -156,12 +134,12 @@ export default function EditPostPage({ params }) {
               required
               rows="12"
               disabled={saving}
-              placeholder="Write your post content here..."
+              placeholder="Tulis cerita Anda di sini..."
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="category_id">Category *</label>
+            <label htmlFor="category_id">Kategori *</label>
             <select
               id="category_id"
               name="category_id"
@@ -170,7 +148,7 @@ export default function EditPostPage({ params }) {
               required
               disabled={saving}
             >
-              <option value="">Select a category</option>
+              <option value="">Pilih kategori</option>
               {categories.map(cat => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -185,7 +163,7 @@ export default function EditPostPage({ params }) {
               className="btn" 
               disabled={saving || loading}
             >
-              {saving ? 'Updating...' : 'Update Post'}
+              {saving ? 'Menyimpan...' : 'Update Cerita'}
             </button>
             
             <button 
@@ -194,10 +172,10 @@ export default function EditPostPage({ params }) {
               onClick={() => router.back()}
               disabled={saving}
             >
-              Cancel
+              Batal
             </button>
             
-            {saving && <span style={{ color: '#666' }}>Saving changes...</span>}
+            {saving && <span style={{ color: '#666' }}>Menyimpan perubahan...</span>}
           </div>
         </form>
       </div>
